@@ -5,7 +5,8 @@ import Layout from './components/Layout/Layout';
 import Products from './components/Shop/Products';
 import { uiActions } from './store/ui-slice';
 import Notification from './components/UI/Notification';
-
+import { sendCartData } from './store/cart-slice';
+import { fetchCartData } from './store/cart-actions';
 let isInitial = true
 
 
@@ -15,45 +16,57 @@ const dispatch = useDispatch()
   const cart = useSelector((state => state.cart))
   const notification = useSelector(state => state.ui.notification)
 
+
   useEffect(()=>{
-     const sendCartData = async ()=>{
+    dispatch(fetchCartData)
 
-      dispatch(uiActions.showNotification({
-        status:'pending',
-        title:'sending...',
-        message:'sending cart data'
-      }))
-      const response =await fetch('url',{
-        method:'PUT',
-        body:JSON.stringify(cart)
+  },[dispatch])
+
+
+  useEffect(()=>{
+    // const sendCartData = async ()=>{
+
+      // dispatch(uiActions.showNotification({
+      //   status:'pending',
+      //   title:'sending...',
+      //   message:'sending cart data'
+      // }))
+      // const response =await fetch('url',{
+      //   method:'PUT',
+      //   body:JSON.stringify(cart)
    
-      })
+      // })
 
-      if(!response.ok){
-        throw new Error('Sending cart data failed')
+      // if(!response.ok){
+      //   throw new Error('Sending cart data failed')
        
-      }
+      // }
       //const responseData = await response.json()
 
-      dispatch(uiActions.showNotification({
-        status:'success',
-        title:'success',
-        message:'sent cart data successfully'
-      }))
-    }
+      // dispatch(uiActions.showNotification({
+      //   status:'success',
+      //   title:'success',
+      //   message:'sent cart data successfully'
+      // }))
+    //}
 
     if(isInitial){
       isInitial=false
       return
     }
+if(cart.changed){
+  dispatch(sendCartData(cart))
+}
+
     
-   sendCartData().catch(error =>{
-    dispatch(uiActions.showNotification({
-      status:'error',
-      title:'error',
-      message:'sending cart data failed'
-    }))
-   })
+    
+  //  sendCartData().catch(error =>{
+  //   // dispatch(uiActions.showNotification({
+  //   //   status:'error',
+  //   //   title:'error',
+  //   //   message:'sending cart data failed'
+  //   // }))
+  //  })
   },[cart,dispatch])
   
   return (
